@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git clone https://github.com/tharro/module_flutter.git module_flutter 
+git clone https://github.com/devemeausss/module_flutter.git module_flutter 
 cp -R module_flutter/search_address/widgets/ lib/widgets/ 
 cp -R module_flutter/search_address/repositories/ lib/repositories/address 
 cp -R module_flutter/search_address/models/ lib/models/address 

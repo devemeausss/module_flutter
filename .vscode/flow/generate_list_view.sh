@@ -54,7 +54,7 @@ select option in "${options[@]}"; do
     esac
 done
 
-git clone https://github.com/tharro/module_flutter.git module_flutter 
+git clone https://github.com/devemeausss/module_flutter.git module_flutter 
 cp -R module_flutter/template_list lib/blocs/
 sudo rm -R module_flutter
 

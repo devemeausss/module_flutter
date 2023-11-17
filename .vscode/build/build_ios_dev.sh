@@ -10,3 +10,9 @@ RESULT_VERSION_STRING=$(sed "s/VERSION_STRING = //g" <<< $VERSION_STRING)
 /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $INCREASE_NUMBER" "Runner/Info.plist" 
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $RESULT_VERSION_STRING" "Runner/Info.plist" 
 flutter build ipa --flavor dev -t lib/main_dev.dart
+
+cd..
+## Automatic upload ipa to Firebase Distribution
+firebase appdistribution:distribute /path/to/.ipa  \ 
+    --app 1:1111111:dev-ios:11111111111111 \
+    --groups "Testers"

@@ -10,16 +10,10 @@
     //================================= BUILD ========================================
     //================================================================================
     {
-      "label": "Build Dev (Android & iOS)",
+      "label": "Build Android Dev",
       "type": "shell",
       "icon": {"id": "run", "color": "terminal.ansiGreen"},
-      "command": "chmod +x .vscode/build/build_dev.sh; .vscode/build/build_dev.sh"
-    },
-    {
-      "label": "Build Android dev",
-      "type": "shell",
-      "icon": {"id": "run", "color": "terminal.ansiGreen"},
-      "command": "cd android; ./gradlew -PfinalDev; flutter build apk --flavor dev -t lib/main_dev.dart"
+      "command": "chmod +x .vscode/build/build_android_dev.sh; .vscode/build/build_android_dev.sh"
     },
     {
       "label": "Build iOS Dev",
@@ -28,28 +22,16 @@
       "command": "chmod +x .vscode/build/build_ios_dev.sh; .vscode/build/build_ios_dev.sh"
     },
     {
-      "label": "Build Stage (Android & iOS)",
-      "type": "shell",
-      "icon": {"id": "run", "color": "terminal.ansiGreen"},
-      "command": "chmod +x .vscode/build/build_stage.sh; .vscode/build/build_stage.sh"
-    },
-    {
       "label": "Build Android Stage",
       "type": "shell",
       "icon": {"id": "run", "color": "terminal.ansiGreen"},
-      "command": "cd android; ./gradlew -PfinalStage; flutter build apk --flavor stage -t lib/main_stage.dart"
+      "command": "chmod +x .vscode/build/build_android_stage.sh; .vscode/build/build_android_stage.sh"
     },
     {
       "label": "Build iOS Stage",
       "type": "shell",
       "icon": {"id": "run", "color": "terminal.ansiGreen"},
       "command": "chmod +x .vscode/build/build_ios_stage.sh; .vscode/build/build_ios_stage.sh"
-    },
-    {
-      "label": "Build Prod (Android & iOS)",
-      "type": "shell",
-      "icon": {"id": "run", "color": "terminal.ansiGreen"},
-      "command": "chmod +x .vscode/build/build_prod.sh; .vscode/build/build_prod.sh"
     },
     {
       "label": "Build Android Prod",
@@ -64,12 +46,6 @@
       "command": "chmod +x .vscode/build/build_ios_prod.sh; .vscode/build/build_ios_prod.sh"
     },
     {
-      "label": "Build Prod (Android & iOS - only increase number)",
-      "type": "shell",
-      "icon": {"id": "run", "color": "terminal.ansiGreen"},
-      "command": "chmod +x .vscode/build/build_prod_increase_number.sh; .vscode/build/build_prod_increase_number.sh"
-    },
-    {
       "label": "Build Android Prod (only increase number)",
       "type": "shell",
       "icon": {"id": "run", "color": "terminal.ansiGreen"},
@@ -82,7 +58,7 @@
       "command": "cd android; ./gradlew -PfinalProdOnlyIncreaseBuildNumber; flutter build apk --flavor prod -t lib/main.dart"
     },
     {
-      "label": "Build iOS (only increase number)",
+      "label": "Build iOS Prod (only increase number)",
       "type": "shell",
       "icon": {"id": "run", "color": "terminal.ansiGreen"},
       "command": "chmod +x .vscode/build/build_ios_prod_increase_number.sh; .vscode/build/build_ios_prod_increase_number.sh"

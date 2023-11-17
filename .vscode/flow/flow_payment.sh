@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git clone https://github.com/tharro/module_flutter.git module_flutter 
+git clone https://github.com/devemeausss/module_flutter.git module_flutter 
 cp -R module_flutter/payment/screens/ lib/screens/ 
 cp -R module_flutter/payment/repositories/ lib/repositories/ 
 cp -R module_flutter/payment/models/ lib/models/ 
