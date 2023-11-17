@@ -1,5 +1,12 @@
 #!/bin/bash
 
+if [ -d "build/ios" ]; then
+    cd build/ios
+    rm -rf ipa
+    cd ..
+    cd ..
+fi
+
 cd ios
 BUILD_NUMBER=$(awk "/^BUILD_NUMBER/{print $NF}" config/dev/Version.txt)
 RESULT=$(sed "s/BUILD_NUMBER = //g" <<< $BUILD_NUMBER) 
@@ -11,8 +18,16 @@ RESULT_VERSION_STRING=$(sed "s/VERSION_STRING = //g" <<< $VERSION_STRING)
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $RESULT_VERSION_STRING" "Runner/Info.plist" 
 flutter build ipa --flavor dev -t lib/main_dev.dart
 
-cd..
+cd ..
+FILE_PATH=""
+for path in "build/ios/ipa"/*; do
+  if [[ "$path" == *".ipa"* ]]; then
+    FILE_PATH=$path
+  fi
+done
+
 ## Automatic upload ipa to Firebase Distribution
-firebase appdistribution:distribute /path/to/.ipa  \ 
-    --app 1:1111111:dev-ios:11111111111111 \
-    --groups "Testers"
+firebase appdistribution:distribute $FILE_PATH  \ 
+    --app 1:1111111:dev-ios:11111111111111  \
+    --groups "Testers" 
+    --release-notes "Version: $RESULT_VERSION_STRING ($INCREASE_NUMBER)"
