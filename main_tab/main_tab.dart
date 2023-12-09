@@ -52,19 +52,9 @@ class _MainTabState extends State<MainTab> {
         ),
       ),
     ];
-    MyPluginNotification.settingNotification(
-        colorNotification: Colors.red,
-        onMessage: (RemoteMessage remoteMessage) {},
-        onOpenLocalMessage: (String message) {},
-        onOpenFCMMessage: (RemoteMessage remote) {},
-        onRegisterFCM: (Map<String, dynamic> data) {
-          BlocProvider.of<AuthBloc>(context).add(AuthFCM(body: data));
-        },
-        iconNotification: 'icon_notification',
-        chanelId: 'chanel',
-        chanelName: 'app_channel',
-        channelDescription: 'chanel description',
-        onShowLocalNotification: (RemoteMessage message) => true);
+
+    _setupFCM();
+
     super.initState();
   }
 
@@ -72,6 +62,25 @@ class _MainTabState extends State<MainTab> {
   void dispose() {
     MyPluginNotification.dispose();
     super.dispose();
+  }
+
+  _setupFCM() async {
+    String? currentToken = await MyPluginAuthentication.getCurrentFCMToken();
+    MyPluginNotification.settingNotification(
+        colorNotification: Colors.red,
+        onMessage: (RemoteMessage remoteMessage) {},
+        onOpenLocalMessage: (String message) {},
+        onOpenFCMMessage: (RemoteMessage remote) {},
+        onRegisterFCM: (Map<String, dynamic> data) async {
+          BlocProvider.of<AuthBloc>(context).add(AuthFCM(body: data));
+          await MyPluginAuthentication.saveFCMToken(data['token']);
+        },
+        currentFCMToken: currentToken,
+        iconNotification: 'icon_notification',
+        chanelId: 'chanel',
+        chanelName: 'app_channel',
+        channelDescription: 'chanel description',
+        onShowLocalNotification: (RemoteMessage message) => true);
   }
 
   @override
