@@ -34,7 +34,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AuthResumeSession event, Emitter<AuthState> emit) async {
     try {
       var hasToken = await MyPluginAuthentication.hasToken();
-      if (hasToken) {
+      bool isFirst = await MyPluginHelper.isFirstInstall();
+      if (hasToken && !isFirst) {
         final profile = await authRepositories.getProfile();
         emit(state.copyWith(profileModel: profile));
         event.onSuccess(true);
