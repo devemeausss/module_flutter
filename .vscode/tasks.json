@@ -127,5 +127,11 @@
       "icon": {"id": "type-hierarchy-super", "color": "terminal.ansiYellow"},
       "command": "chmod +x .vscode/flow/generate_assets.sh; .vscode/flow/generate_assets.sh"
     },
+    {
+      "label": "Phone input custom",
+      "type": "shell",
+      "icon": {"id": "type-hierarchy-super", "color": "terminal.ansiYellow"},
+      "command": "chmod +x .vscode/flow/phone_input_custom.sh; .vscode/flow/phone_input_custom.sh"
+    },
   ]
 }
