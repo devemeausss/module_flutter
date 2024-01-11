@@ -27,7 +27,4 @@ for path in "build/ios/ipa"/*; do
 done
 
 ## Automatic upload ipa to Firebase Distribution
-firebase appdistribution:distribute $FILE_PATH  \ 
-    --app 1:1111111:dev-ios:11111111111111  \
-    --groups "Testers" 
-    --release-notes "Version: $RESULT_VERSION_STRING ($INCREASE_NUMBER)"
+firebase appdistribution:distribute "$PWD/$FILE_PATH" --app 1:1111111:ios:1111111111 --groups "Testers" --release-notes "Version: $RESULT_VERSION_STRING ($INCREASE_NUMBER)"
