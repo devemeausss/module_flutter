@@ -58,8 +58,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         userId: event.id,
         token: tokenModel.token,
         refreshToken: tokenModel.refreshToken,
-        expiredToken: tokenModel.expiredToken * 1000,
-        expiredRefreshToken: tokenModel.expiredRefreshToken * 1000,
+        expiredToken: tokenModel.expiredToken,
+        expiredRefreshToken: tokenModel.expiredRefreshToken,
       );
       ProfileModel profileModel = await authRepositories.getProfile();
       emit(state.copyWith(profileModel: profileModel, loginLoading: false));
@@ -140,8 +140,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           userId: event.id,
           token: tokenModel.token,
           refreshToken: tokenModel.refreshToken,
-          expiredToken: tokenModel.expiredToken * 1000,
-          expiredRefreshToken: tokenModel.expiredRefreshToken * 1000,
+          expiredToken: tokenModel.expiredToken,
+          expiredRefreshToken: tokenModel.expiredRefreshToken,
         );
         if (getStartedModel.isVerifiedEmail! &&
             getStartedModel.isVerifiedPhone!) {
@@ -200,8 +200,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         userId: event.id,
         token: tokenModel.token,
         refreshToken: tokenModel.refreshToken,
-        expiredToken: tokenModel.expiredToken * 1000,
-        expiredRefreshToken: tokenModel.expiredRefreshToken * 1000,
+        expiredToken: tokenModel.expiredToken,
+        expiredRefreshToken: tokenModel.expiredRefreshToken,
       );
       ProfileModel profileModel = await authRepositories.getProfile();
       emit(state.copyWith(
