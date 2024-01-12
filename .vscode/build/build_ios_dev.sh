@@ -16,7 +16,7 @@ VERSION_STRING=$(awk "/^VERSION_STRING/{print $NF}" config/dev/Version.txt)
 RESULT_VERSION_STRING=$(sed "s/VERSION_STRING = //g" <<< $VERSION_STRING) 
 /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $INCREASE_NUMBER" "Runner/Info.plist" 
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString $RESULT_VERSION_STRING" "Runner/Info.plist" 
-flutter build ipa --flavor dev -t lib/main_dev.dart
+flutter build ipa --export-method ad-hoc --flavor dev -t lib/main_dev.dart
 
 cd ..
 FILE_PATH=""
