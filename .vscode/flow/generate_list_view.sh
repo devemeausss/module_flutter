@@ -12,9 +12,9 @@ old_folder_name=template_list
 # Prompt the user to enter the new folder name
 read -p "Enter the name list: " new_folder_name
 
-if [[ ! "$new_folder_name" =~ ^[a-z-]+$ ]];
+if [[ ! "$new_folder_name" =~ ^[a-z_]+$ ]];
 then
-    echo "$new_folder_name  unvalid. Please enter other name with format name1-name2 or name"
+    echo "$new_folder_name unvalid. Please enter other name with format name_name or name"
     exit 0
 fi
 
