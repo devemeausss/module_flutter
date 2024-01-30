@@ -65,7 +65,6 @@ class _MainTabState extends State<MainTab> {
   }
 
   _setupFCM() async {
-    String? currentToken = await MyPluginAuthentication.getCurrentFCMToken();
     MyPluginNotification.settingNotification(
         colorNotification: Colors.red,
         onMessage: (RemoteMessage remoteMessage) {},
@@ -73,9 +72,7 @@ class _MainTabState extends State<MainTab> {
         onOpenFCMMessage: (RemoteMessage remote) {},
         onRegisterFCM: (Map<String, dynamic> data) async {
           BlocProvider.of<AuthBloc>(context).add(AuthFCM(body: data));
-          await MyPluginAuthentication.saveFCMToken(data['token']);
         },
-        currentFCMToken: currentToken,
         iconNotification: 'icon_notification',
         chanelId: 'chanel',
         chanelName: 'app_channel',

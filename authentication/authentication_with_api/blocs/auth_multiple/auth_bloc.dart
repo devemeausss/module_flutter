@@ -261,11 +261,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       popUtil(const GetStarted());
       try {
-        String? currentToken =
-            await MyPluginAuthentication.getCurrentFCMToken();
-        await MyPluginAuthentication.removeFCMToken();
-        Map<String, dynamic> body = await MyPluginNotification.getInfoToRequest(
-            currentFCMToken: currentToken);
+        Map<String, dynamic> body =
+            await MyPluginNotification.getInfoToRequest();
         await authRepositories.removeFCMDevice(body: body);
       } catch (e) {}
       await MyPluginAuthentication.deleteUser();
