@@ -65,13 +65,16 @@ class _MainTabState extends State<MainTab> {
   }
 
   _setupFCM() async {
+    var currentIMEI = await MyPluginAuthentication.getCurrentIMEI();
     MyPluginNotification.settingNotification(
+        currentIMEI: currentIMEI,
         colorNotification: Colors.red,
         onMessage: (RemoteMessage remoteMessage) {},
         onOpenLocalMessage: (String message) {},
         onOpenFCMMessage: (RemoteMessage remote) {},
         onRegisterFCM: (Map<String, dynamic> data) async {
           BlocProvider.of<AuthBloc>(context).add(AuthFCM(body: data));
+          await MyPluginAuthentication.saveIMEI(fcmToken['meid']);
         },
         iconNotification: 'icon_notification',
         chanelId: 'chanel',
