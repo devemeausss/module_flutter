@@ -248,8 +248,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         var currentIMEI = await MyPluginAuthentication.getCurrentIMEI();
         Map<String, dynamic> body = await MyPluginNotification.getInfoToRequest(
             currentIMEI: currentIMEI);
-        Map<String, dynamic> body =
-            await MyPluginNotification.getInfoToRequest();
         await authRepositories.removeFCMDevice(body: body);
       } catch (e) {}
       await MyPluginAuthentication.deleteUser();
