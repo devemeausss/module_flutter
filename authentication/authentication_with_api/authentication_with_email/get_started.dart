@@ -95,7 +95,7 @@ class _GetStartedState extends State<GetStarted> {
                   onValid: (bool val) {
                     _isValidEmail = val;
                   },
-                  hintText: 'key_enter_a_email'.tr(),
+                  hintText: 'key_enter_an_email'.tr(),
                   onFieldSubmitted: (text) {
                     _submit();
                   },
