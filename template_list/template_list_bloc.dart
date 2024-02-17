@@ -30,9 +30,11 @@ class TemplateListBloc extends Bloc<TemplateListEvent, TemplateListState> {
     try {
       emit(state.copyWith(
           listTemplateList: state.listTemplateList.copyWith(
-              isLoadingMore: event.isLoadingMore,
-              isLoading: !event.isLoadingMore && !event.isFreshing,
-              isRefreshing: !event.isLoadingMore && event.isFreshing)));
+        isLoadingMore: event.isLoadingMore,
+        isLoading: !event.isLoadingMore && !event.isFreshing,
+        isRefreshing: !event.isLoadingMore && event.isFreshing,
+        errorMessage: '',
+      )));
       ListModel<TemplateListModel> newTemplateListList =
           await templateListRepositories.getTemplateList(
               url: event.isLoadingMore
