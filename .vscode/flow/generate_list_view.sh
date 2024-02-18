@@ -181,8 +181,7 @@ class _${new_converted_file_name}PageState extends State<${new_converted_file_na
 
   @override
   Widget build(BuildContext context) {
-    $(if [ $selected_options != 2 ]; then echo "
-    return Scaffold(
+    $(if [ $selected_options != 2 ]; then echo "return Scaffold(
       appBar:
           HeaderCustom(textTitle: 'key_${lowercase_new_string}'.tr()),
       body: $content
