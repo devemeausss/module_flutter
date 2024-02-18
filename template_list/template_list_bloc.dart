@@ -46,6 +46,9 @@ class TemplateListBloc extends Bloc<TemplateListEvent, TemplateListState> {
                   ? state.listTemplateList.results! +
                       newTemplateListList.results!
                   : newTemplateListList.results)));
+      if (!event.isLoadingMore) {
+        add(GetTemplateList(isLoadingMore: true));
+      }
     } catch (e) {
       emit(state.copyWith(
           listTemplateList: state.listTemplateList.copyWith(
