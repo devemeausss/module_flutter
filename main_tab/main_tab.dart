@@ -74,7 +74,7 @@ class _MainTabState extends State<MainTab> {
         onOpenFCMMessage: (RemoteMessage remote) {},
         onRegisterFCM: (Map<String, dynamic> data) async {
           BlocProvider.of<AuthBloc>(context).add(AuthFCM(body: data));
-          await MyPluginAuthentication.saveIMEI(fcmToken['meid']);
+          await MyPluginAuthentication.saveIMEI(data['meid']);
         },
         iconNotification: 'icon_notification',
         chanelId: 'chanel',
