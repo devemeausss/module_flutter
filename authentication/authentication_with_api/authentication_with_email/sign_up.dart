@@ -13,8 +13,8 @@ import '../../widgets/overlay_loading_custom.dart';
 import '../../widgets/text_field_custom.dart';
 
 class SignUp extends StatefulWidget {
-  const SignUp({Key? key, required this.email}) : super(key: key);
-  final String email;
+  const SignUp({Key? key, this.email}) : super(key: key);
+  final String? email;
   @override
   State<SignUp> createState() => _SignUpState();
 }
@@ -30,28 +30,40 @@ class _SignUpState extends State<SignUp> {
   final FocusNode _lastNameFocusNode = FocusNode();
   bool _isValidPassword = false,
       _isValidFirstName = false,
-      _isValidLastName = false;
+      _isValidEmail = false;
   late final AuthBloc _authBloc = BlocProvider.of<AuthBloc>(context);
 
+  bool _enableButton = _isValidPassword && _isValidFirstName && _isValidEmail;
+
   _submit() {
-    if (!_isValidPassword || !_isValidFirstName || !_isValidLastName) {
-      return;
-    }
-    _authBloc.add(AuthSignUp(
-      body: {
-        'email': widget.email,
-        'first_name': _firstNameController.text.trim(),
-        'last_name': _lastNameController.text.trim(),
-        'password': _passwordController.text.trim(),
-      },
-      onSuccess: () {
-        replace(Verify(
-          isResend: false,
-          password: _passwordController.text,
-          email: widget.email,
+    _authBloc.add(AuthGetStarted(
+      onSuccess: (String value) {
+        _authBloc.add(AuthSignUp(
+          body: {
+            'email': widget.email,
+            'first_name': _firstNameController.text.trim(),
+            'last_name': _lastNameController.text.trim(),
+            'password': _passwordController.text.trim(),
+          },
+          onSuccess: () {
+            replace(Verify(
+              isResend: false,
+              password: _passwordController.text,
+              email: widget.email,
+            ));
+          },
         ));
       },
+      body: {
+        'email': _emailController.text.trim(),
+      },
     ));
+  }
+
+  @override
+  void initState() {
+    _emailController.text = widget.email ?? '';
+    super.initState();
   }
 
   @override
@@ -66,6 +78,7 @@ class _SignUpState extends State<SignUp> {
       child: Scaffold(
         bottomNavigationBar: BottomAppBarCustom(
           child: ButtonCustom(
+            enable: _enableButton,
             onPressed: () {
               _submit();
             },
@@ -83,19 +96,25 @@ class _SignUpState extends State<SignUp> {
                   controller: _emailController,
                   focusNode: _emailFocusNode,
                   validType: ValidType.email,
-                  hintText: widget.email,
-                  enabled: false,
+                  validType: ValidType.notEmpty,
+                  hintText: 'key_email'.tr(),
+                  textInputAction: TextInputAction.next,
+                  onValid: (bool val) {
+                    setState(() {
+                      _isValidEmail = val;
+                    });
+                  },
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                10.h,
                 TextFieldCustom(
                   controller: _passwordController,
                   focusNode: _passwordFocusNode,
                   validType: ValidType.password,
                   hintText: 'key_password'.tr(),
                   onValid: (bool val) {
-                    _isValidPassword = val;
+                    setState(() {
+                      _isValidPassword = val;
+                    });
                   },
                   textInputAction: TextInputAction.next,
                 ),
@@ -106,7 +125,9 @@ class _SignUpState extends State<SignUp> {
                   validType: ValidType.notEmpty,
                   hintText: 'key_first_name'.tr(),
                   onValid: (bool val) {
-                    _isValidFirstName = val;
+                    setState(() {
+                      _isValidFirstName = val;
+                    });
                   },
                   textInputAction: TextInputAction.next,
                 ),
@@ -114,14 +135,7 @@ class _SignUpState extends State<SignUp> {
                 TextFieldCustom(
                   controller: _lastNameController,
                   focusNode: _lastNameFocusNode,
-                  validType: ValidType.notEmpty,
                   hintText: 'key_last_name'.tr(),
-                  onValid: (bool val) {
-                    _isValidLastName = val;
-                  },
-                  onFieldSubmitted: (text) {
-                    _submit();
-                  },
                 ),
                 GestureDetector(
                     onTap: () {

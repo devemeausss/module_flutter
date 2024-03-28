@@ -37,20 +37,28 @@ class _SignUpState extends State<SignUp> {
     if (!_isValidPassword || !_isValidFirstName || !_isValidLastName) {
       return;
     }
-    _authBloc.add(AuthSignUp(
-        body: {
-          'phone': widget.phone,
-          'first_name': _firstNameController.text.trim(),
-          'last_name': _lastNameController.text.trim(),
-          'password': _passwordController.text,
-        },
-        onSuccess: () {
-          replace(Verify(
-            isResend: false,
-            password: _passwordController.text,
-            phone: widget.phone,
-          ));
-        }));
+
+    _authBloc.add(AuthGetStarted(
+      onSuccess: (String value) {
+        _authBloc.add(AuthSignUp(
+            body: {
+              'phone': widget.phone,
+              'first_name': _firstNameController.text.trim(),
+              'last_name': _lastNameController.text.trim(),
+              'password': _passwordController.text,
+            },
+            onSuccess: () {
+              replace(Verify(
+                isResend: false,
+                password: _passwordController.text,
+                phone: widget.phone,
+              ));
+            }));
+      },
+      body: {
+        'phone': widget.phone,
+      },
+    ));
   }
 
   @override
