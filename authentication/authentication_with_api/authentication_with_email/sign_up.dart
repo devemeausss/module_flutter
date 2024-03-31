@@ -33,14 +33,15 @@ class _SignUpState extends State<SignUp> {
       _isValidEmail = false;
   late final AuthBloc _authBloc = BlocProvider.of<AuthBloc>(context);
 
-  bool _enableButton = _isValidPassword && _isValidFirstName && _isValidEmail;
+  bool get _enableButton =>
+      _isValidPassword && _isValidFirstName && _isValidEmail;
 
   _submit() {
     _authBloc.add(AuthGetStarted(
       onSuccess: (String value) {
         _authBloc.add(AuthSignUp(
           body: {
-            'email': widget.email,
+            'email': _emailController.text.trim(),
             'first_name': _firstNameController.text.trim(),
             'last_name': _lastNameController.text.trim(),
             'password': _passwordController.text.trim(),
@@ -49,7 +50,7 @@ class _SignUpState extends State<SignUp> {
             replace(Verify(
               isResend: false,
               password: _passwordController.text,
-              email: widget.email,
+              email: _emailController.text.trim(),
             ));
           },
         ));
@@ -78,7 +79,7 @@ class _SignUpState extends State<SignUp> {
       child: Scaffold(
         bottomNavigationBar: BottomAppBarCustom(
           child: ButtonCustom(
-            enable: _enableButton,
+            enabled: _enableButton,
             onPressed: () {
               _submit();
             },
@@ -96,7 +97,6 @@ class _SignUpState extends State<SignUp> {
                   controller: _emailController,
                   focusNode: _emailFocusNode,
                   validType: ValidType.email,
-                  validType: ValidType.notEmpty,
                   hintText: 'key_email'.tr(),
                   textInputAction: TextInputAction.next,
                   onValid: (bool val) {
