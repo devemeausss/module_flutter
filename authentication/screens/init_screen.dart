@@ -38,11 +38,9 @@ class _InitScreenState extends State<InitScreen> {
                     .replaceAll(':storeVersion', status.storeVersion),
                 title: 'key_update'.tr(),
                 onPressSecondButton: () {
-                  goBack();
                   _getData();
                 },
                 onPressPrimaryButton: () async {
-                  goBack();
                   _getData();
                   try {
                     if (await canLaunchUrl(Uri.parse(status.appStoreLink))) {
