@@ -70,7 +70,11 @@ class _InitScreenState extends State<InitScreen> {
       Helper.showToastBottom(message: message);
       if (isFirst) {
         FlutterSecureStorage storage = const FlutterSecureStorage();
+        var imei = await MyPluginAuthentication.getCurrentIMEI();
         await storage.deleteAll();
+        if (imei != null) {
+          await MyPluginAuthentication.saveIMEI(imei);
+        }
         await MyPluginHelper.setFirstInstall();
       }
       replace(const GetStarted());
@@ -78,7 +82,11 @@ class _InitScreenState extends State<InitScreen> {
       bool isFirst = await MyPluginHelper.isFirstInstall();
       if (isFirst) {
         FlutterSecureStorage storage = const FlutterSecureStorage();
+        var imei = await MyPluginAuthentication.getCurrentIMEI();
         await storage.deleteAll();
+        if (imei != null) {
+          await MyPluginAuthentication.saveIMEI(imei);
+        }
         await MyPluginHelper.setFirstInstall();
         popUtil(const GetStarted());
       } else {
