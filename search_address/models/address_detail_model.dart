@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+
 import './address_model.dart';
 
 class AddressDetailModel extends Equatable {
@@ -38,29 +39,24 @@ class AddressDetailModel extends Equatable {
     String address = '';
     String country = 'Australia';
     final addressComponents = result?.addressComponents ?? [];
-    if (addressComponents.isNotEmpty) {
-      final type =
-          (addressComponents[addressComponents.length - 1].types ?? []);
-      if (type.isNotEmpty) {
-        if (type.first == 'postal_code') {
-          postcode = addressComponents[addressComponents.length - 1].longName!;
-        }
+    for (int index = 0; index < addressComponents.length; index++) {
+      final element = addressComponents[index];
+      final types = element.types ?? [];
+      if (types.contains('postal_code')) {
+        postcode = element.longName ?? '';
       }
-    }
 
-    final arrAddress = value.description!.split(',');
-    if (arrAddress.length >= 2) {
-      address = '${arrAddress.first}, ${arrAddress[1]}';
-    } else {
-      address = arrAddress.first;
-    }
+      if (types.contains('country')) {
+        country = element.shortName ?? '';
+      }
 
-    if (value.structuredFormatting != null) {
-      final arrAddress = value.structuredFormatting!.secondaryText!.split(',');
-      if (arrAddress.isNotEmpty) {
-        final arrStateAndCity = arrAddress.first.split(' ');
-        city = arrStateAndCity.first;
-        state = arrStateAndCity[arrStateAndCity.length - 1];
+      if (types.contains('administrative_area_level_1')) {
+        state = element.shortName ?? '';
+      }
+
+      if (types.contains('administrative_area_level_3') ||
+          types.contains('locality')) {
+        city = element.shortName ?? '';
       }
     }
 
