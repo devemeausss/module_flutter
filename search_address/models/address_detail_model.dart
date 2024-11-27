@@ -71,7 +71,7 @@ class AddressDetailModel extends Equatable {
     }
 
     return Address(
-      address: '$street $route',
+       address: street.isEmpty && route.isEmpty ? '' : '$street $route',
       country: country,
       postcode: postcode,
       city: city,
