@@ -36,18 +36,28 @@ class AddressDetailModel extends Equatable {
     String postcode = '';
     String city = '';
     String state = '';
-    String address = '';
+    String street = '';
+    String route = '';
     String country = 'Australia';
     final addressComponents = result?.addressComponents ?? [];
     for (int index = 0; index < addressComponents.length; index++) {
       final element = addressComponents[index];
       final types = element.types ?? [];
+
+      if (types.contains('street_number')) {
+        street = element.longName ?? '';
+      }
+
+      if (types.contains('route')) {
+        route = element.longName ?? '';
+      }
+
       if (types.contains('postal_code')) {
         postcode = element.longName ?? '';
       }
 
       if (types.contains('country')) {
-        country = element.shortName ?? '';
+        country = element.longName ?? '';
       }
 
       if (types.contains('administrative_area_level_1')) {
@@ -61,7 +71,7 @@ class AddressDetailModel extends Equatable {
     }
 
     return Address(
-      address: address,
+      address: '$street $route',
       country: country,
       postcode: postcode,
       city: city,
