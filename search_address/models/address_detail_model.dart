@@ -64,14 +64,17 @@ class AddressDetailModel extends Equatable {
         state = element.shortName ?? '';
       }
 
-      if (types.contains('administrative_area_level_3') ||
-          types.contains('locality')) {
+      if (types.contains('locality')) {
+        city = element.shortName ?? '';
+      }
+
+      if (types.contains('administrative_area_level_3') && city.isEmpty) {
         city = element.shortName ?? '';
       }
     }
 
     return Address(
-       address: street.isEmpty && route.isEmpty ? '' : '$street $route',
+      address: street.isEmpty && route.isEmpty ? '' : '$street $route',
       country: country,
       postcode: postcode,
       city: city,
