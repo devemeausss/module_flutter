@@ -38,6 +38,7 @@ class AddressDetailModel extends Equatable {
     String state = '';
     String street = '';
     String route = '';
+    String suburb = '';
     String country = 'Australia';
     final addressComponents = result?.addressComponents ?? [];
     for (int index = 0; index < addressComponents.length; index++) {
@@ -68,8 +69,16 @@ class AddressDetailModel extends Equatable {
         city = element.shortName ?? '';
       }
 
-      if (types.contains('administrative_area_level_3') && city.isEmpty) {
+      if (types.contains('administrative_area_level_2') && city.isEmpty) {
         city = element.shortName ?? '';
+      }
+
+      if (types.contains('sublocality')) {
+        suburb = element.shortName ?? '';
+      }
+
+      if (types.contains('administrative_area_level_3') && suburb.isEmpty) {
+        suburb = element.shortName ?? '';
       }
     }
 
@@ -79,6 +88,7 @@ class AddressDetailModel extends Equatable {
       postcode: postcode,
       city: city,
       state: state,
+      suburb: suburb,
       lat: result?.geometry?.location?.lat ?? 0,
       lng: result?.geometry?.location?.lng ?? 0,
       id: result?.placeId ?? '',
@@ -296,6 +306,7 @@ class Address {
     required this.address,
     required this.city,
     required this.state,
+    this.suburb,
     required this.country,
     required this.postcode,
     required this.lat,
@@ -308,6 +319,7 @@ class Address {
   String state;
   String country;
   String postcode;
+  String? suburb;
   double lat;
   double lng;
 
@@ -320,6 +332,7 @@ class Address {
         postcode: json["postcode"] ?? "",
         lat: json["lat"] ?? 0,
         lng: json["lng"] ?? 0,
+        suburb: json['suburb'] ?? "",
       );
 
   Map<String, dynamic> toJson() => {
@@ -331,5 +344,6 @@ class Address {
         "postcode": postcode,
         "lat": lat,
         "lng": lng,
+        "suburb": suburb,
       };
 }
