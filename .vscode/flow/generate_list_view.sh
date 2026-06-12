@@ -120,11 +120,13 @@ cd $path_screens
 mkdir $new_folder_name
 cd $new_folder_name
 touch ${new_folder_name}_page.dart
+newLowerCaseFirstLetterBloc="$(tr '[:upper:]' '[:lower:]' <<< ${new_converted_file_name:0:1})${new_converted_file_name:1}"
 content="BlocBuilder<${new_converted_file_name}Bloc, ${new_converted_file_name}State>(
         builder: (context, state) {
           List<${new_converted_file_name}Model> list${new_converted_file_name} =
               state.list${new_converted_file_name}.results ?? [];
           return AppListViewCustom(
+            bloc: _${newLowerCaseFirstLetterBloc}Bloc,
             $(if [ $selected_options = 2 ]; then echo "scrollDirection: Axis.horizontal,
             heightItemHorizontalLoading: 72,
             widthItemHorizontalLoading: 72,
@@ -168,13 +170,15 @@ class ${new_converted_file_name}Page extends StatefulWidget {
 }
 
 class _${new_converted_file_name}PageState extends State<${new_converted_file_name}Page> {
+  late ${new_converted_file_name}Bloc _${newLowerCaseFirstLetterBloc}Bloc;
   _getData({bool isFreshing = false, bool isLoadingMore = false}) {
-    BlocProvider.of<${new_converted_file_name}Bloc>(context).add(Get${new_converted_file_name}(
+    _${newLowerCaseFirstLetterBloc}Bloc.add(Get${new_converted_file_name}(
         isFreshing: isFreshing, isLoadingMore: isLoadingMore));
   }
 
   @override
   void initState() {
+    _${newLowerCaseFirstLetterBloc}Bloc = context.read<${new_converted_file_name}Bloc>();
     _getData();
     super.initState();
   }
