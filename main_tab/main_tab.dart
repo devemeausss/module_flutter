@@ -23,33 +23,17 @@ class _MainTabState extends State<MainTab> {
     _appFlows = [
       MyWidgetAppFlow(
         title: 'Home',
-        iconData: const Icon(
-          Icons.camera,
-          color: Colors.grey,
-        ),
-        activeIconData: const Icon(
-          Icons.camera,
-          color: Colors.red,
-        ),
+        iconData: const Icon(Icons.camera, color: Colors.grey),
+        activeIconData: const Icon(Icons.camera, color: Colors.red),
         navigatorKey: GlobalKey<NavigatorState>(),
-        child: Container(
-          color: Colors.red,
-        ),
+        child: Container(color: Colors.red),
       ),
       MyWidgetAppFlow(
         title: 'Message',
-        iconData: const Icon(
-          Icons.message,
-          color: Colors.grey,
-        ),
-        activeIconData: const Icon(
-          Icons.message,
-          color: Colors.red,
-        ),
+        iconData: const Icon(Icons.message, color: Colors.grey),
+        activeIconData: const Icon(Icons.message, color: Colors.red),
         navigatorKey: GlobalKey<NavigatorState>(),
-        child: Container(
-          color: Colors.yellow,
-        ),
+        child: Container(color: Colors.yellow),
       ),
     ];
 
@@ -65,22 +49,20 @@ class _MainTabState extends State<MainTab> {
   }
 
   _setupFCM() async {
-    var currentIMEI = await MyPluginAuthentication.getCurrentIMEI();
     MyPluginNotification.settingNotification(
-        currentIMEI: currentIMEI,
-        colorNotification: Colors.red,
-        onMessage: (RemoteMessage remoteMessage) {},
-        onOpenLocalMessage: (String message) {},
-        onOpenFCMMessage: (RemoteMessage remote) {},
-        onRegisterFCM: (Map<String, dynamic> data) async {
-          BlocProvider.of<AuthBloc>(context).add(AuthFCM(body: data));
-          await MyPluginAuthentication.saveIMEI(data['meid']);
-        },
-        iconNotification: 'icon_notification',
-        chanelId: 'chanel',
-        chanelName: 'app_channel',
-        channelDescription: 'chanel description',
-        onShowLocalNotification: (RemoteMessage message) => true);
+      colorNotification: Colors.red,
+      onMessage: (RemoteMessage remoteMessage) {},
+      onOpenLocalMessage: (String message) {},
+      onOpenFCMMessage: (RemoteMessage remote) {},
+      onRegisterFCM: (Map<String, dynamic> data) async {
+        BlocProvider.of<AuthBloc>(context).add(AuthFCM(body: data));
+      },
+      iconNotification: 'icon_notification',
+      chanelId: 'chanel',
+      chanelName: 'app_channel',
+      channelDescription: 'chanel description',
+      onShowLocalNotification: (RemoteMessage message) => true,
+    );
   }
 
   @override
