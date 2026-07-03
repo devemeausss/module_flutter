@@ -21,10 +21,13 @@ class AuthResumeSession extends AuthEvent {
 }
 
 class AuthLogin extends AuthEvent {
-  final String id, password;
+  final String email, password;
   final Function onSuccess;
-  const AuthLogin(
-      {required this.id, required this.password, required this.onSuccess});
+  const AuthLogin({
+    required this.email,
+    required this.password,
+    required this.onSuccess,
+  });
 }
 
 class AuthSignUp extends AuthEvent {
@@ -38,27 +41,31 @@ class AuthLogout extends AuthEvent {
 }
 
 class AuthResendCode extends AuthEvent {
-  final String id;
+  final String email;
   final String type;
   final Function onSuccess;
-  const AuthResendCode(
-      {required this.id, required this.type, required this.onSuccess});
+  const AuthResendCode({
+    required this.email,
+    required this.type,
+    required this.onSuccess,
+  });
 }
 
 class AuthVerifyCode extends AuthEvent {
-  final String id;
+  final String email;
   final String type;
   final String? password;
   final String code;
   final Function onSuccess;
   final Function(String) onError;
-  const AuthVerifyCode(
-      {this.password,
-      required this.code,
-      required this.id,
-      required this.type,
-      required this.onError,
-      required this.onSuccess});
+  const AuthVerifyCode({
+    this.password,
+    required this.code,
+    required this.email,
+    required this.type,
+    required this.onError,
+    required this.onSuccess,
+  });
 }
 
 class AuthDismissError extends AuthEvent {}
@@ -67,36 +74,40 @@ class AuthUpdatePassword extends AuthEvent {
   final String currentPassword;
   final String newPassword;
   final Function onSuccess;
-  const AuthUpdatePassword(
-      {required this.currentPassword,
-      required this.newPassword,
-      required this.onSuccess});
+  const AuthUpdatePassword({
+    required this.currentPassword,
+    required this.newPassword,
+    required this.onSuccess,
+  });
 }
 
 class AuthUpdateProfile extends AuthEvent {
   final PickedFile? image;
   final Map<String, dynamic> body;
   final Function() onSuccess;
-  const AuthUpdateProfile(
-      {this.image, required this.body, required this.onSuccess});
+  const AuthUpdateProfile({
+    this.image,
+    required this.body,
+    required this.onSuccess,
+  });
 }
 
 class AuthForgotPassword extends AuthEvent {
-  final String id;
+  final String email;
   final Function onSuccess;
-  const AuthForgotPassword({required this.id, required this.onSuccess});
+  const AuthForgotPassword({required this.email, required this.onSuccess});
 }
 
 class AuthResetPassword extends AuthEvent {
   final String code;
   final String password;
-  final String id;
+  final String email;
   final Function onSuccess;
   const AuthResetPassword({
     required this.code,
     required this.password,
     required this.onSuccess,
-    required this.id,
+    required this.email,
   });
 }
 

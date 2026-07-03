@@ -24,10 +24,11 @@ class _GetStartedState extends State<GetStarted> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
   bool _isValidEmail = false;
-  late final AuthBloc _authBloc = BlocProvider.of<AuthBloc>(context);
+  late AuthBloc _authBloc;
 
   @override
   void initState() {
+    _authBloc = context.read<AuthBloc>();
     super.initState();
   }
 
@@ -35,32 +36,26 @@ class _GetStartedState extends State<GetStarted> {
     if (!_isValidEmail) {
       return;
     }
-    _authBloc.add(AuthGetStarted(
-      onSuccess: (String value) {
-        switch (value) {
-          case MyPluginAppConstraints.signUp:
-            push(SignUp(
-              email: _controller.text.trim(),
-            ));
-            break;
-          case MyPluginAppConstraints.login:
-            push(Login(
-              email: _controller.text.trim(),
-            ));
-            break;
-          case MyPluginAppConstraints.verify:
-            push(Verify(
-              isResend: true,
-              email: _controller.text.trim(),
-            ));
-            break;
-          default:
-        }
-      },
-      body: {
-        'email': _controller.text.trim(),
-      },
-    ));
+
+    _authBloc.add(
+      AuthGetStarted(
+        onSuccess: (String value) {
+          switch (value) {
+            case MyPluginAppConstraints.signUp:
+              push(SignUp(email: _controller.text.trim()));
+              break;
+            case MyPluginAppConstraints.login:
+              push(Login(email: _controller.text.trim()));
+              break;
+            case MyPluginAppConstraints.verify:
+              push(Verify(isResend: true, email: _controller.text.trim()));
+              break;
+            default:
+          }
+        },
+        body: {'email': _controller.text.trim()},
+      ),
+    );
   }
 
   @override
@@ -69,7 +64,9 @@ class _GetStartedState extends State<GetStarted> {
       loadingWidget: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           return LoadingCustom(
-              isOverlay: true, isLoading: state.getStartedRequesting!);
+            isOverlay: true,
+            isLoading: state.getStartedRequesting!,
+          );
         },
       ),
       child: Scaffold(
@@ -84,8 +81,9 @@ class _GetStartedState extends State<GetStarted> {
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(
-                vertical: AppConstrains.paddingVertical,
-                horizontal: AppConstrains.paddingHorizontal),
+              vertical: AppConstrains.paddingVertical,
+              horizontal: AppConstrains.paddingHorizontal,
+            ),
             child: Column(
               children: [
                 TextFieldCustom(

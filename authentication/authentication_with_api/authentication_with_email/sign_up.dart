@@ -20,49 +20,47 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  final TextEditingController _emailController = TextEditingController();
-  final FocusNode _emailFocusNode = FocusNode();
-  final TextEditingController _passwordController = TextEditingController();
-  final FocusNode _passwordFocusNode = FocusNode();
-  final TextEditingController _firstNameController = TextEditingController();
-  final FocusNode _firstNameFocusNode = FocusNode();
-  final TextEditingController _lastNameController = TextEditingController();
-  final FocusNode _lastNameFocusNode = FocusNode();
+  final TextEditingController _emailController = TextEditingController(),
+      _passwordController = TextEditingController(),
+      _firstNameController = TextEditingController(),
+      _lastNameController = TextEditingController();
+  final FocusNode _emailFocusNode = FocusNode(),
+      _passwordFocusNode = FocusNode(),
+      _firstNameFocusNode = FocusNode(),
+      _lastNameFocusNode = FocusNode();
   bool _isValidPassword = false,
       _isValidFirstName = false,
       _isValidEmail = false;
-  late final AuthBloc _authBloc = BlocProvider.of<AuthBloc>(context);
+  late AuthBloc _authBloc;
 
   bool get _enableButton =>
       _isValidPassword && _isValidFirstName && _isValidEmail;
 
   _submit() {
-    _authBloc.add(AuthGetStarted(
-      onSuccess: (String value) {
-        _authBloc.add(AuthSignUp(
-          body: {
-            'email': _emailController.text.trim(),
-            'first_name': _firstNameController.text.trim(),
-            'last_name': _lastNameController.text.trim(),
-            'password': _passwordController.text.trim(),
-          },
-          onSuccess: () {
-            replace(Verify(
+    _authBloc.add(
+      AuthSignUp(
+        body: {
+          'email': _emailController.text.trim(),
+          'first_name': _firstNameController.text.trim(),
+          'last_name': _lastNameController.text.trim(),
+          'password': _passwordController.text.trim(),
+        },
+        onSuccess: () {
+          replace(
+            Verify(
               isResend: false,
               password: _passwordController.text,
               email: _emailController.text.trim(),
-            ));
-          },
-        ));
-      },
-      body: {
-        'email': _emailController.text.trim(),
-      },
-    ));
+            ),
+          );
+        },
+      ),
+    );
   }
 
   @override
   void initState() {
+    _authBloc = context.read<AuthBloc>();
     _emailController.text = widget.email ?? '';
     super.initState();
   }
@@ -73,7 +71,9 @@ class _SignUpState extends State<SignUp> {
       loadingWidget: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           return LoadingCustom(
-              isOverlay: true, isLoading: state.signUpLoading!);
+            isOverlay: true,
+            isLoading: state.signUpLoading!,
+          );
         },
       ),
       child: Scaffold(
@@ -89,8 +89,9 @@ class _SignUpState extends State<SignUp> {
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(
-                vertical: AppConstrains.paddingVertical,
-                horizontal: AppConstrains.paddingHorizontal),
+              vertical: AppConstrains.paddingVertical,
+              horizontal: AppConstrains.paddingHorizontal,
+            ),
             child: Column(
               children: [
                 TextFieldCustom(
@@ -138,10 +139,11 @@ class _SignUpState extends State<SignUp> {
                   hintText: 'key_last_name'.tr(),
                 ),
                 GestureDetector(
-                    onTap: () {
-                      replace(const GetStarted());
-                    },
-                    child: Text('key_use_another_account'.tr())),
+                  onTap: () {
+                    replace(const GetStarted());
+                  },
+                  child: Text('key_use_another_account'.tr()),
+                ),
               ],
             ),
           ),

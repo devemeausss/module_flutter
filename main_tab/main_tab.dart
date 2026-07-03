@@ -16,9 +16,11 @@ class MainTab extends StatefulWidget {
 class _MainTabState extends State<MainTab> {
   late List<MyWidgetAppFlow> _appFlows;
   GlobalKey<AdaptiveBottomNavigationScaffoldState>? _adapterKey;
+  late AuthBloc _authBloc;
 
   @override
   void initState() {
+    _authBloc = context.read<AuthBloc>();
     _adapterKey = GlobalKey<AdaptiveBottomNavigationScaffoldState>();
     _appFlows = [
       MyWidgetAppFlow(
@@ -55,7 +57,7 @@ class _MainTabState extends State<MainTab> {
       onOpenLocalMessage: (String message) {},
       onOpenFCMMessage: (RemoteMessage remote) {},
       onRegisterFCM: (Map<String, dynamic> data) async {
-        BlocProvider.of<AuthBloc>(context).add(AuthFCM(body: data));
+        _authBloc.add(AuthFCM(body: data));
       },
       iconNotification: 'icon_notification',
       chanelId: 'chanel',

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:plugin_helper/index.dart';
 
 import '../../blocs/auth/auth_bloc.dart';
+import '../../blocs/auth/auth_bloc.dart';
 import '../../index.dart';
 import '../../screens/auth/get_started.dart';
 
@@ -13,14 +14,17 @@ class InitScreen extends StatefulWidget {
 }
 
 class _InitScreenState extends State<InitScreen> {
+  late AuthBloc _authBloc;
+
   @override
   void initState() {
+    _authBloc = context.read<AuthBloc>();
     messageRequire();
     _checkUpdate();
     super.initState();
   }
 
-  _checkUpdate() async {
+  void _checkUpdate() async {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       MyPluginHelper.checkUpdateApp(
         onError: () {
@@ -30,26 +34,27 @@ class _InitScreenState extends State<InitScreen> {
           if (status.canUpdate) {
             MyPluginHelper.remove();
             Helper.showSuccessDialog(
-                context: context,
-                isShowSecondButton: true,
-                message: 'key_update_version_detail'
-                    .tr()
-                    .replaceAll(':localVersion', status.localVersion)
-                    .replaceAll(':storeVersion', status.storeVersion),
-                title: 'key_update'.tr(),
-                onPressSecondButton: () {
-                  _getData();
-                },
-                onPressPrimaryButton: () async {
-                  _getData();
-                  try {
-                    if (await canLaunchUrl(Uri.parse(status.appStoreLink))) {
-                      await launchUrl(Uri.parse(status.appStoreLink));
-                    } else {
-                      throw 'Could not launch appStoreLink';
-                    }
-                  } catch (e) {}
-                });
+              context: context,
+              isShowSecondButton: true,
+              message: 'key_update_version_detail'
+                  .tr()
+                  .replaceAll(':localVersion', status.localVersion)
+                  .replaceAll(':storeVersion', status.storeVersion),
+              title: 'key_update'.tr(),
+              onPressSecondButton: () {
+                _getData();
+              },
+              onPressPrimaryButton: () async {
+                _getData();
+                try {
+                  if (await canLaunchUrl(Uri.parse(status.appStoreLink))) {
+                    await launchUrl(Uri.parse(status.appStoreLink));
+                  } else {
+                    throw 'Could not launch appStoreLink';
+                  }
+                } catch (e) {}
+              },
+            );
           } else {
             _getData(isHideSplashScreen: true);
           }
@@ -60,46 +65,50 @@ class _InitScreenState extends State<InitScreen> {
     });
   }
 
-  _getData({bool isHideSplashScreen = false}) {
-    BlocProvider.of<AuthBloc>(context)
-        .add(AuthResumeSession(onError: (String message) async {
-      bool isFirst = await MyPluginHelper.isFirstInstall();
-      if (isHideSplashScreen) {
-        MyPluginHelper.remove();
-      }
-      Helper.showToastBottom(message: message);
-      if (isFirst) {
-        FlutterSecureStorage storage = const FlutterSecureStorage();
-        var imei = await MyPluginAuthentication.getCurrentIMEI();
-        await storage.deleteAll();
-        if (imei != null) {
-          await MyPluginAuthentication.saveIMEI(imei);
-        }
-        await MyPluginHelper.setFirstInstall();
-      }
-      replace(const GetStarted());
-    }, onSuccess: (bool isResume) async {
-      bool isFirst = await MyPluginHelper.isFirstInstall();
-      if (isFirst) {
-        FlutterSecureStorage storage = const FlutterSecureStorage();
-        var imei = await MyPluginAuthentication.getCurrentIMEI();
-        await storage.deleteAll();
-        if (imei != null) {
-          await MyPluginAuthentication.saveIMEI(imei);
-        }
-        await MyPluginHelper.setFirstInstall();
-        popUtil(const GetStarted());
-      } else {
-        if (isResume) {
-          //TODO: go to home
-        } else {
-          popUtil(const GetStarted());
-        }
-      }
-      if (isHideSplashScreen) {
-        MyPluginHelper.remove();
-      }
-    }));
+  void _getData({bool isHideSplashScreen = false}) {
+    _authBloc.add(
+      AuthResumeSession(
+        onError: (String message) async {
+          bool isFirst = await MyPluginHelper.isFirstInstall();
+          if (isHideSplashScreen) {
+            MyPluginHelper.remove();
+          }
+          Helper.showToastBottom(message: message);
+          if (isFirst) {
+            FlutterSecureStorage storage = const FlutterSecureStorage();
+            var imei = await MyPluginAuthentication.getCurrentIMEI();
+            await storage.deleteAll();
+            if (imei != null) {
+              await MyPluginAuthentication.saveIMEI(imei);
+            }
+            await MyPluginHelper.setFirstInstall();
+          }
+          replace(const GetStarted());
+        },
+        onSuccess: (bool isResume) async {
+          bool isFirst = await MyPluginHelper.isFirstInstall();
+          if (isFirst) {
+            FlutterSecureStorage storage = const FlutterSecureStorage();
+            var imei = await MyPluginAuthentication.getCurrentIMEI();
+            await storage.deleteAll();
+            if (imei != null) {
+              await MyPluginAuthentication.saveIMEI(imei);
+            }
+            await MyPluginHelper.setFirstInstall();
+            popUtil(const GetStarted());
+          } else {
+            if (isResume) {
+              //TODO: go to home
+            } else {
+              popUtil(const GetStarted());
+            }
+          }
+          if (isHideSplashScreen) {
+            MyPluginHelper.remove();
+          }
+        },
+      ),
+    );
   }
 
   void messageRequire() {

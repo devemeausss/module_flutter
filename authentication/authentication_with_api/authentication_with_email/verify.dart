@@ -13,9 +13,12 @@ import '../../widgets/overlay_loading_custom.dart';
 import '../../widgets/pin_put_custom.dart';
 
 class Verify extends StatefulWidget {
-  const Verify(
-      {Key? key, required this.isResend, this.password, required this.email})
-      : super(key: key);
+  const Verify({
+    Key? key,
+    required this.isResend,
+    this.password,
+    required this.email,
+  }) : super(key: key);
   final bool isResend;
   final String? password;
   final String email;
@@ -25,10 +28,11 @@ class Verify extends StatefulWidget {
 
 class _VerifyState extends State<Verify> {
   final TextEditingController _codeController = TextEditingController();
-  late final AuthBloc _authBloc = BlocProvider.of<AuthBloc>(context);
+  late AuthBloc _authBloc;
 
   @override
   void initState() {
+    _authBloc = context.read<AuthBloc>();
     if (widget.isResend) {
       _resendCode(false);
     }
@@ -36,25 +40,30 @@ class _VerifyState extends State<Verify> {
   }
 
   _resendCode(bool isShowPopup) {
-    _authBloc.add(AuthResendCode(
+    _authBloc.add(
+      AuthResendCode(
         type: 'email',
         id: _authBloc.state.getStartedModel!.id!,
         onSuccess: () {
           if (isShowPopup) {
             Helper.showToastBottom(
-                message: 'key_resend_code_success'.tr(),
-                type: ToastType.success);
+              message: 'key_resend_code_success'.tr(),
+              type: ToastType.success,
+            );
           }
-        }));
+        },
+      ),
+    );
   }
 
   _submit() {
     if (_codeController.text.length == 6) {
-      _authBloc.add(AuthVerifyCode(
+      _authBloc.add(
+        AuthVerifyCode(
           type: 'email',
           password: widget.password,
           code: _codeController.text,
-          id: _authBloc.state.getStartedModel!.id!,
+          email: widget.email,
           onError: (message) {
             _codeController.clear();
             Helper.showToastBottom(message: message);
@@ -63,11 +72,11 @@ class _VerifyState extends State<Verify> {
             if (widget.password != null) {
               //TODO: go to home
             } else {
-              replace(Login(
-                email: _authBloc.state.getStartedModel!.email!,
-              ));
+              replace(Login(email: widget.email));
             }
-          }));
+          },
+        ),
+      );
     }
   }
 
@@ -77,7 +86,9 @@ class _VerifyState extends State<Verify> {
       loadingWidget: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           return LoadingCustom(
-              isOverlay: true, isLoading: state.verifyCodeLoading!);
+            isOverlay: true,
+            isLoading: state.verifyCodeLoading!,
+          );
         },
       ),
       child: Scaffold(
@@ -92,8 +103,9 @@ class _VerifyState extends State<Verify> {
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(
-                vertical: AppConstrains.paddingVertical,
-                horizontal: AppConstrains.paddingHorizontal),
+              vertical: AppConstrains.paddingVertical,
+              horizontal: AppConstrains.paddingHorizontal,
+            ),
             child: Column(
               children: [
                 Text(widget.email),
@@ -103,15 +115,17 @@ class _VerifyState extends State<Verify> {
                   onCompleted: (code) {},
                 ),
                 GestureDetector(
-                    onTap: () {
-                      _resendCode(true);
-                    },
-                    child: Text('key_resend_code'.tr())),
+                  onTap: () {
+                    _resendCode(true);
+                  },
+                  child: Text('key_resend_code'.tr()),
+                ),
                 GestureDetector(
-                    onTap: () {
-                      replace(const GetStarted());
-                    },
-                    child: Text('key_use_another_account'.tr())),
+                  onTap: () {
+                    replace(const GetStarted());
+                  },
+                  child: Text('key_use_another_account'.tr()),
+                ),
               ],
             ),
           ),

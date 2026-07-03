@@ -22,7 +22,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   final TextEditingController _newPasswordController = TextEditingController(),
       _confirmPasswordController = TextEditingController(),
       _codeController = TextEditingController();
-  late final AuthBloc _authBloc = BlocProvider.of<AuthBloc>(context);
+  late AuthBloc _authBloc;
 
   bool _isValidNewPassword = false,
       _isValidConfirmPassword = false,
@@ -37,25 +37,32 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   }
 
   _submit() {
-    _authBloc.add(AuthResetPassword(
+    _authBloc.add(
+      AuthResetPassword(
         code: _codeController.text,
         password: _newPasswordController.text,
         onSuccess: () {
           //TODO: go to home
         },
-        id: _authBloc.state.getStartedModel!.id!));
+        id: _authBloc.state.getStartedModel!.id!,
+      ),
+    );
   }
 
   _resendCode({bool isPopup = false}) {
-    _authBloc.add(AuthForgotPassword(
+    _authBloc.add(
+      AuthForgotPassword(
         id: _authBloc.state.getStartedModel!.id!,
         onSuccess: () {
           if (isPopup) {
             Helper.showToastBottom(
-                message: 'key_resend_code_success'.tr(),
-                type: ToastType.success);
+              message: 'key_resend_code_success'.tr(),
+              type: ToastType.success,
+            );
           }
-        }));
+        },
+      ),
+    );
   }
 
   _checkMatchPassword() {
@@ -77,6 +84,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   @override
   void initState() {
+    _authBloc = context.read<AuthBloc>();
     _resendCode(isPopup: false);
     super.initState();
   }
@@ -87,15 +95,18 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       loadingWidget: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           return LoadingCustom(
-              isOverlay: true, isLoading: state.resetPasswordLoading!);
+            isOverlay: true,
+            isLoading: state.resetPasswordLoading!,
+          );
         },
       ),
       child: Scaffold(
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(
-                vertical: AppConstrains.paddingVertical,
-                horizontal: AppConstrains.paddingHorizontal),
+              vertical: AppConstrains.paddingVertical,
+              horizontal: AppConstrains.paddingHorizontal,
+            ),
             child: Column(
               children: [
                 PinPutCustom(
@@ -141,21 +152,23 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   },
                 ),
                 GestureDetector(
-                    onTap: () {
-                      replace(const GetStarted());
-                    },
-                    child: Text('key_use_another_account'.tr())),
+                  onTap: () {
+                    replace(const GetStarted());
+                  },
+                  child: Text('key_use_another_account'.tr()),
+                ),
                 GestureDetector(
-                    onTap: () {
-                      _resendCode();
-                    },
-                    child: Text('key_resend_code'.tr())),
+                  onTap: () {
+                    _resendCode();
+                  },
+                  child: Text('key_resend_code'.tr()),
+                ),
                 16.h,
                 ButtonCustom(
                   onPressed: _submit,
                   enabled: _enableButton,
                   title: 'key_continue'.tr(),
-                )
+                ),
               ],
             ),
           ),

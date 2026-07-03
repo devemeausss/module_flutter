@@ -31,7 +31,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void authResumeSession(
-      AuthResumeSession event, Emitter<AuthState> emit) async {
+    AuthResumeSession event,
+    Emitter<AuthState> emit,
+  ) async {
     try {
       var hasToken = await MyPluginAuthentication.hasToken();
       bool isFirst = await MyPluginHelper.isFirstInstall();
@@ -52,10 +54,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(state.copyWith(loginLoading: true));
       final TokenModel tokenModel = await authRepositories.login(
         password: event.password,
-        id: event.id,
+        email: event.email,
       );
       await MyPluginAuthentication.persistUser(
-        userId: event.id,
+        userId: event.email,
         token: tokenModel.token,
         refreshToken: tokenModel.refreshToken,
         expiredToken: tokenModel.expiredToken,
@@ -67,21 +69,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } catch (e) {
       emit(state.copyWith(loginLoading: false));
       Helper.showToastBottom(
-          message: e.parseError.code == 'NotAuthorizedException'
-              ? 'key_wrong_password'.tr()
-              : e.parseError.message);
+        message: e.parseError.code == 'NotAuthorizedException'
+            ? 'key_wrong_password'.tr()
+            : e.parseError.message,
+      );
     }
   }
 
   void authGetStarted(AuthGetStarted event, Emitter<AuthState> emit) async {
     try {
       emit(state.copyWith(getStartedRequesting: true));
-      GetStartedModel getStartedModel =
-          await authRepositories.getStarted(event.body);
-      emit(state.copyWith(
-          getStartedModel: getStartedModel, getStartedRequesting: false));
+      GetStartedModel getStartedModel = await authRepositories.getStarted(
+        event.body,
+      );
+      emit(
+        state.copyWith(
+          getStartedModel: getStartedModel,
+          getStartedRequesting: false,
+        ),
+      );
       if (getStartedModel.isRegistered!) {
-        bool isVerify = getStartedModel.isVerifiedEmail! ||
+        bool isVerify =
+            getStartedModel.isVerifiedEmail! ||
             getStartedModel.isVerifiedPhone!;
         if (isVerify) {
           event.onSuccess(MyPluginAppConstraints.login);
@@ -100,7 +109,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   void authResendCode(AuthResendCode event, Emitter<AuthState> emit) async {
     try {
       emit(state.copyWith(verifyCodeLoading: true));
-      await authRepositories.resendCode(id: event.id, type: event.type);
+      await authRepositories.resendCode(id: event.email, type: event.type);
       emit(state.copyWith(verifyCodeLoading: false));
       event.onSuccess();
     } catch (e) {
@@ -112,10 +121,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   void authSignUp(AuthSignUp event, Emitter<AuthState> emit) async {
     try {
       emit(state.copyWith(signUpLoading: true));
-      String id = await authRepositories.signUp(event.body);
-      emit(state.copyWith(
-          signUpLoading: false,
-          getStartedModel: state.getStartedModel!.copyWith(id: id)));
+      await authRepositories.signUp(event.body);
+      emit(state.copyWith(signUpLoading: false));
       event.onSuccess();
     } catch (e) {
       emit(state.copyWith(signUpLoading: false));
@@ -128,22 +135,26 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(state.copyWith(verifyCodeLoading: true));
 
       await authRepositories.verify(
-          id: event.id, code: event.code, type: event.type);
+        email: event.email,
+        code: event.code,
+        type: event.type,
+      );
       if (event.password != null) {
         final TokenModel tokenModel = await authRepositories.login(
           password: event.password!,
-          id: event.id,
+          email: event.email,
         );
         await MyPluginAuthentication.persistUser(
-          userId: event.id,
+          userId: event.email,
           token: tokenModel.token,
           refreshToken: tokenModel.refreshToken,
           expiredToken: tokenModel.expiredToken,
           expiredRefreshToken: tokenModel.expiredRefreshToken,
         );
         ProfileModel profileModel = await authRepositories.getProfile();
-        emit(state.copyWith(
-            profileModel: profileModel, verifyCodeLoading: false));
+        emit(
+          state.copyWith(profileModel: profileModel, verifyCodeLoading: false),
+        );
       } else {
         emit(state.copyWith(verifyCodeLoading: false));
       }
@@ -155,10 +166,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void authForgotPassword(
-      AuthForgotPassword event, Emitter<AuthState> emit) async {
+    AuthForgotPassword event,
+    Emitter<AuthState> emit,
+  ) async {
     try {
       emit(state.copyWith(resetPasswordLoading: true));
-      await authRepositories.resendPassword(id: event.id);
+      await authRepositories.resendPassword(email: event.email);
       event.onSuccess();
       emit(state.copyWith(resetPasswordLoading: false));
     } catch (e) {
@@ -168,28 +181,31 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void authResetPassword(
-      AuthResetPassword event, Emitter<AuthState> emit) async {
+    AuthResetPassword event,
+    Emitter<AuthState> emit,
+  ) async {
     try {
       emit(state.copyWith(resetPasswordLoading: true));
       await authRepositories.resetPassword(
         code: event.code,
         newPassword: event.password,
-        id: event.id,
+        id: event.email,
       );
       final TokenModel tokenModel = await authRepositories.login(
         password: event.password,
-        id: event.id,
+        id: event.email,
       );
       await MyPluginAuthentication.persistUser(
-        userId: event.id,
+        userId: event.email,
         token: tokenModel.token,
         refreshToken: tokenModel.refreshToken,
         expiredToken: tokenModel.expiredToken,
         expiredRefreshToken: tokenModel.expiredRefreshToken,
       );
       ProfileModel profileModel = await authRepositories.getProfile();
-      emit(state.copyWith(
-          profileModel: profileModel, resetPasswordLoading: false));
+      emit(
+        state.copyWith(profileModel: profileModel, resetPasswordLoading: false),
+      );
       event.onSuccess();
     } catch (e) {
       emit(state.copyWith(resetPasswordLoading: false));
@@ -198,19 +214,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void authUpdateProfile(
-      AuthUpdateProfile event, Emitter<AuthState> emit) async {
+    AuthUpdateProfile event,
+    Emitter<AuthState> emit,
+  ) async {
     try {
       emit(state.copyWith(updateProfileLoading: true));
       String imageUrl = '';
       if (event.image != null) {
-        imageUrl =
-            await authRepositories.uploadImage(file: File(event.image!.path));
+        imageUrl = await authRepositories.uploadImage(
+          file: File(event.image!.path),
+        );
         event.body['image'] = imageUrl;
       }
       await authRepositories.updateProfile(body: event.body);
       ProfileModel profileModel = await authRepositories.getProfile();
-      emit(state.copyWith(
-          profileModel: profileModel, updateProfileLoading: false));
+      emit(
+        state.copyWith(profileModel: profileModel, updateProfileLoading: false),
+      );
       event.onSuccess();
     } catch (e) {
       emit(state.copyWith(updateProfileLoading: false));
@@ -219,12 +239,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void authUpdatePassword(
-      AuthUpdatePassword event, Emitter<AuthState> emit) async {
+    AuthUpdatePassword event,
+    Emitter<AuthState> emit,
+  ) async {
     try {
       emit(state.copyWith(updatePasswordLoading: true));
       await authRepositories.updatePassword(
-          currentPassword: event.currentPassword,
-          newPassword: event.newPassword);
+        currentPassword: event.currentPassword,
+        newPassword: event.newPassword,
+      );
       emit(state.copyWith(updatePasswordLoading: false));
       event.onSuccess();
     } catch (e) {
@@ -247,7 +270,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       try {
         var currentIMEI = await MyPluginAuthentication.getCurrentIMEI();
         Map<String, dynamic> body = await MyPluginNotification.getInfoToRequest(
-            currentIMEI: currentIMEI);
+          currentIMEI: currentIMEI,
+        );
         await authRepositories.removeFCMDevice(body: body);
       } catch (e) {}
       await MyPluginAuthentication.deleteUser();

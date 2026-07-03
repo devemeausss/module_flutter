@@ -13,26 +13,36 @@ import '../../widgets/overlay_loading_custom.dart';
 import '../../widgets/text_field_custom.dart';
 
 class Login extends StatefulWidget {
-  const Login({Key? key, required this.email}) : super(key: key);
-  final String email;
+  const Login({Key? key, this.email}) : super(key: key);
+  final String? email;
   @override
   State<Login> createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> {
-  final TextEditingController _emailController = TextEditingController();
-  final FocusNode _emailFocusNode = FocusNode();
-  final TextEditingController _passwordController = TextEditingController();
-  final FocusNode _passwordFocusNode = FocusNode();
-  late final AuthBloc _authBloc = BlocProvider.of<AuthBloc>(context);
+  final TextEditingController _emailController = TextEditingController(),
+      _passwordController = TextEditingController();
+  final FocusNode _emailFocusNode = FocusNode(),
+      _passwordFocusNode = FocusNode();
+  late AuthBloc _authBloc;
 
   _submit() {
-    _authBloc.add(AuthLogin(
-        id: _authBloc.state.getStartedModel!.id!,
+    _authBloc.add(
+      AuthLogin(
+        email: _emailController.text.trim(),
         password: _passwordController.text,
         onSuccess: () {
           //TODO: go to home
-        }));
+        },
+      ),
+    );
+  }
+
+  @override
+  void initState() {
+    _authBloc = context.read<AuthBloc>();
+    _emailController.text = widget.email ?? '';
+    super.initState();
   }
 
   @override
@@ -55,16 +65,16 @@ class _LoginState extends State<Login> {
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(
-                vertical: AppConstrains.paddingVertical,
-                horizontal: AppConstrains.paddingHorizontal),
+              vertical: AppConstrains.paddingVertical,
+              horizontal: AppConstrains.paddingHorizontal,
+            ),
             child: Column(
               children: [
                 TextFieldCustom(
                   controller: _emailController,
                   focusNode: _emailFocusNode,
                   validType: ValidType.email,
-                  hintText: widget.email,
-                  enabled: false,
+                  hintText: 'key_email'.tr(),
                 ),
                 10.h,
                 TextFieldCustom(
@@ -79,15 +89,17 @@ class _LoginState extends State<Login> {
                 ),
                 10.h,
                 GestureDetector(
-                    onTap: () {
-                      replace(const GetStarted());
-                    },
-                    child: Text('key_use_another_account'.tr())),
+                  onTap: () {
+                    replace(const GetStarted());
+                  },
+                  child: Text('key_use_another_account'.tr()),
+                ),
                 GestureDetector(
-                    onTap: () {
-                      push(const ForgotPassword());
-                    },
-                    child: Text('key_forgot_password'.tr())),
+                  onTap: () {
+                    push(const ForgotPassword());
+                  },
+                  child: Text('key_forgot_password'.tr()),
+                ),
               ],
             ),
           ),

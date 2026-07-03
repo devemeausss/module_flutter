@@ -31,7 +31,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void authResumeSession(
-      AuthResumeSession event, Emitter<AuthState> emit) async {
+    AuthResumeSession event,
+    Emitter<AuthState> emit,
+  ) async {
     try {
       var hasToken = await MyPluginAuthentication.hasToken();
       bool isFirst = await MyPluginHelper.isFirstInstall();
@@ -67,19 +69,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } catch (e) {
       emit(state.copyWith(loginLoading: false));
       Helper.showToastBottom(
-          message: e.parseError.code == 'NotAuthorizedException'
-              ? 'key_wrong_password'.tr()
-              : e.parseError.message);
+        message: e.parseError.code == 'NotAuthorizedException'
+            ? 'key_wrong_password'.tr()
+            : e.parseError.message,
+      );
     }
   }
 
   void authGetStarted(AuthGetStarted event, Emitter<AuthState> emit) async {
     try {
       emit(state.copyWith(getStartedRequesting: true));
-      GetStartedModel getStartedModel =
-          await authRepositories.getStarted(event.body);
-      emit(state.copyWith(
-          getStartedModel: getStartedModel, getStartedRequesting: false));
+      GetStartedModel getStartedModel = await authRepositories.getStarted(
+        event.body,
+      );
+      emit(
+        state.copyWith(
+          getStartedModel: getStartedModel,
+          getStartedRequesting: false,
+        ),
+      );
       if (getStartedModel.isRegistered!) {
         if (getStartedModel.isVerifiedEmail! &&
             getStartedModel.isVerifiedPhone!) {
@@ -113,9 +121,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(state.copyWith(signUpLoading: true));
       String id = await authRepositories.signUp(event.body);
       GetStartedModel getStartedModel = state.getStartedModel!.copyWith(
-          email: event.body['email'], phone: event.body['phone'], id: id);
-      emit(state.copyWith(
-          getStartedModel: getStartedModel, signUpLoading: false));
+        email: event.body['email'],
+        phone: event.body['phone'],
+        id: id,
+      );
+      emit(
+        state.copyWith(getStartedModel: getStartedModel, signUpLoading: false),
+      );
       event.onSuccess();
     } catch (e) {
       emit(state.copyWith(signUpLoading: false));
@@ -127,7 +139,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       emit(state.copyWith(verifyCodeLoading: true));
       await authRepositories.verify(
-          id: event.id, code: event.code, type: event.type);
+        id: event.id,
+        code: event.code,
+        type: event.type,
+      );
       GetStartedModel? getStartedModel = event.type == 'email'
           ? state.getStartedModel!.copyWith(isVerifiedEmail: true)
           : state.getStartedModel!.copyWith(isVerifiedPhone: true);
@@ -146,22 +161,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (getStartedModel.isVerifiedEmail! &&
             getStartedModel.isVerifiedPhone!) {
           ProfileModel? profileModel = await authRepositories.getProfile();
-          emit(state.copyWith(
-            profileModel: profileModel,
-            verifyCodeLoading: false,
-            getStartedModel: getStartedModel,
-          ));
+          emit(
+            state.copyWith(
+              profileModel: profileModel,
+              verifyCodeLoading: false,
+              getStartedModel: getStartedModel,
+            ),
+          );
         } else {
-          emit(state.copyWith(
-            verifyCodeLoading: false,
-            getStartedModel: getStartedModel,
-          ));
+          emit(
+            state.copyWith(
+              verifyCodeLoading: false,
+              getStartedModel: getStartedModel,
+            ),
+          );
         }
       } else {
-        emit(state.copyWith(
-          verifyCodeLoading: false,
-          getStartedModel: getStartedModel,
-        ));
+        emit(
+          state.copyWith(
+            verifyCodeLoading: false,
+            getStartedModel: getStartedModel,
+          ),
+        );
       }
       event.onSuccess();
     } catch (e) {
@@ -171,7 +192,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void authForgotPassword(
-      AuthForgotPassword event, Emitter<AuthState> emit) async {
+    AuthForgotPassword event,
+    Emitter<AuthState> emit,
+  ) async {
     try {
       emit(state.copyWith(resetPasswordLoading: true));
       await authRepositories.resendPassword(id: event.id);
@@ -184,7 +207,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void authResetPassword(
-      AuthResetPassword event, Emitter<AuthState> emit) async {
+    AuthResetPassword event,
+    Emitter<AuthState> emit,
+  ) async {
     try {
       emit(state.copyWith(resetPasswordLoading: true));
       await authRepositories.resetPassword(
@@ -204,8 +229,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         expiredRefreshToken: tokenModel.expiredRefreshToken,
       );
       ProfileModel profileModel = await authRepositories.getProfile();
-      emit(state.copyWith(
-          profileModel: profileModel, resetPasswordLoading: false));
+      emit(
+        state.copyWith(profileModel: profileModel, resetPasswordLoading: false),
+      );
       event.onSuccess();
     } catch (e) {
       emit(state.copyWith(resetPasswordLoading: false));
@@ -214,19 +240,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void authUpdateProfile(
-      AuthUpdateProfile event, Emitter<AuthState> emit) async {
+    AuthUpdateProfile event,
+    Emitter<AuthState> emit,
+  ) async {
     try {
       emit(state.copyWith(updateProfileLoading: true));
       String imageUrl = '';
       if (event.image != null) {
-        imageUrl =
-            await authRepositories.uploadImage(file: File(event.image!.path));
+        imageUrl = await authRepositories.uploadImage(
+          file: File(event.image!.path),
+        );
         event.body['image'] = imageUrl;
       }
       await authRepositories.updateProfile(body: event.body);
       ProfileModel profileModel = await authRepositories.getProfile();
-      emit(state.copyWith(
-          profileModel: profileModel, updateProfileLoading: false));
+      emit(
+        state.copyWith(profileModel: profileModel, updateProfileLoading: false),
+      );
       event.onSuccess();
     } catch (e) {
       emit(state.copyWith(updateProfileLoading: false));
@@ -235,12 +265,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   void authUpdatePassword(
-      AuthUpdatePassword event, Emitter<AuthState> emit) async {
+    AuthUpdatePassword event,
+    Emitter<AuthState> emit,
+  ) async {
     try {
       emit(state.copyWith(updatePasswordLoading: true));
       await authRepositories.updatePassword(
-          currentPassword: event.currentPassword,
-          newPassword: event.newPassword);
+        currentPassword: event.currentPassword,
+        newPassword: event.newPassword,
+      );
       emit(state.copyWith(updatePasswordLoading: false));
       event.onSuccess();
     } catch (e) {
@@ -263,7 +296,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       try {
         var currentIMEI = await MyPluginAuthentication.getCurrentIMEI();
         Map<String, dynamic> body = await MyPluginNotification.getInfoToRequest(
-            currentIMEI: currentIMEI);
+          currentIMEI: currentIMEI,
+        );
         await authRepositories.removeFCMDevice(body: body);
       } catch (e) {}
       await MyPluginAuthentication.deleteUser();

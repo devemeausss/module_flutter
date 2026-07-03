@@ -1,4 +1,8 @@
 {
+    "chat.promptFiles": true,
+    "chat.promptFilesLocations": {
+        ".cursor/prompts": true
+    },
     "editor.defaultFormatter": "Dart-Code.dart-code",
     "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {

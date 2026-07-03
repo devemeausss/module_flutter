@@ -44,27 +44,22 @@ class _GetStartedState extends State<GetStarted> {
 
     _authBloc.add(
       AuthGetStarted(
-          onSuccess: (String value) {
-            switch (value) {
-              case MyPluginAppConstraints.signUp:
-                push(SignUp(
-                  emailOrPhone: _controller.text.trim(),
-                ));
-                break;
-              case MyPluginAppConstraints.login:
-                push(Login(emailOrPhone: _controller.text.trim()));
-                break;
-              case MyPluginAppConstraints.verify:
-                push(OptionsVerify(
-                  emailOrPhone: _controller.text.trim(),
-                ));
-                break;
-              default:
-            }
-          },
-          body: {
-            'email_or_phone': emailOrPhone,
-          }),
+        onSuccess: (String value) {
+          switch (value) {
+            case MyPluginAppConstraints.signUp:
+              push(SignUp(emailOrPhone: _controller.text.trim()));
+              break;
+            case MyPluginAppConstraints.login:
+              push(Login(emailOrPhone: _controller.text.trim()));
+              break;
+            case MyPluginAppConstraints.verify:
+              push(OptionsVerify(emailOrPhone: _controller.text.trim()));
+              break;
+            default:
+          }
+        },
+        body: {'email_or_phone': emailOrPhone},
+      ),
     );
   }
 
@@ -74,7 +69,9 @@ class _GetStartedState extends State<GetStarted> {
       loadingWidget: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           return LoadingCustom(
-              isOverlay: true, isLoading: state.getStartedRequesting!);
+            isOverlay: true,
+            isLoading: state.getStartedRequesting!,
+          );
         },
       ),
       child: Scaffold(
@@ -89,8 +86,9 @@ class _GetStartedState extends State<GetStarted> {
         body: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(
-                vertical: AppConstrains.paddingVertical,
-                horizontal: AppConstrains.paddingHorizontal),
+              vertical: AppConstrains.paddingVertical,
+              horizontal: AppConstrains.paddingHorizontal,
+            ),
             child: Column(
               children: [
                 TextFieldCustom(

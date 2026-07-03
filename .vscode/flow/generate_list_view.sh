@@ -5,54 +5,79 @@ path_screens=./lib/screens
 path_models=./lib/models
 path_respositories=./lib/repositories
 
-# Prompt the user to enter the old folder name
-# read -p "Enter the old folder name: " old_folder_name
+# Usage:
+#   ./generate_list_view.sh <name> <title> <api_url> <list_type>
+#   list_type: vertical | horizontal | gridview  (or 1 | 2 | 3)
+#
+# Interactive prompts (read/select) only work in a real terminal.
+# When run from Cursor Agent or VSCode Task without TTY, pass all 4 arguments.
 
 old_folder_name=template_list
-# Prompt the user to enter the new folder name
-read -p "Enter the name list: " new_folder_name
 
-if [[ ! "$new_folder_name" =~ ^[a-z_]+$ ]];
-then
-    echo "$new_folder_name unvalid. Please enter other name with format name_name or name"
-    exit 0
-fi
+normalize_list_type() {
+  case "$(echo "$1" | tr '[:upper:]' '[:lower:]')" in
+    1|vertical) echo 1 ;;
+    2|horizontal) echo 2 ;;
+    3|grid|gridview) echo 3 ;;
+    *) echo "" ;;
+  esac
+}
 
-read -p "Enter the title shown: " title
+if [[ $# -ge 4 ]]; then
+  new_folder_name="$1"
+  title="$2"
+  api="$3"
+  selected_options=$(normalize_list_type "$4")
+  if [[ -z "$selected_options" ]]; then
+    echo "Invalid list type: $4. Use vertical, horizontal, or gridview."
+    exit 1
+  fi
+else
+  read -p "Enter the name list: " new_folder_name
+  read -p "Enter the title shown: " title
+  read -p "Enter the API url: " api
 
-read -p "Enter the API url: " api
-
-if [[ -d  "$path_blocs/$new_folder_name" || -d  "$path_screens/$new_folder_name" ]];
-then
-    echo "$new_folder_name exists. Please enter other name"
-    exit 0
-fi
-
-options=("Vertical" "Horizontal" "GridView")
-selected_options=1;
-echo "Please enter choose number"
-select option in "${options[@]}"; do
+  options=("Vertical" "Horizontal" "GridView")
+  selected_options=1
+  echo "Please enter choose number"
+  select option in "${options[@]}"; do
     case $option in
-        "Vertical")
-            echo "You chose Vertical"
-            selected_options=1
-            break
-            ;;
-        "Horizontal")
-            echo "You chose Horizontal"
-             selected_options=2
-             break
-            ;;
-        "GridView")
-            echo "You chose GridView"
-             selected_options=3
-             break
-            ;;
-        *) # Handle invalid options
-            echo "Invalid option. Please select a number from 1 to 3."
-            ;;
+      "Vertical")
+        echo "You chose Vertical"
+        selected_options=1
+        break
+        ;;
+      "Horizontal")
+        echo "You chose Horizontal"
+        selected_options=2
+        break
+        ;;
+      "GridView")
+        echo "You chose GridView"
+        selected_options=3
+        break
+        ;;
+      *)
+        echo "Invalid option. Please select a number from 1 to 3."
+        ;;
     esac
-done
+  done
+fi
+
+if [[ ! "$new_folder_name" =~ ^[a-z_]+$ ]]; then
+  echo "$new_folder_name unvalid. Please enter other name with format name_name or name"
+  exit 1
+fi
+
+if [[ -z "$title" || -z "$api" ]]; then
+  echo "Title and API url are required."
+  exit 1
+fi
+
+if [[ -d "$path_blocs/$new_folder_name" || -d "$path_screens/$new_folder_name" ]]; then
+  echo "$new_folder_name exists. Please enter other name"
+  exit 1
+fi
 
 git clone https://github.com/devemeausss/module_flutter.git module_flutter 
 cp -R module_flutter/template_list lib/blocs/

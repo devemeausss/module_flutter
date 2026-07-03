@@ -1,13 +1,13 @@
 part of 'auth_bloc.dart';
 
 class AuthState extends Equatable {
-  final bool? getStartedRequesting,
-      loginLoading,
-      signUpLoading,
-      verifyCodeLoading,
-      resetPasswordLoading,
-      updateProfileLoading,
-      updatePasswordLoading;
+  final bool getStartedRequesting;
+  final bool loginLoading;
+  final bool signUpLoading;
+  final bool verifyCodeLoading;
+  final bool resetPasswordLoading;
+  final bool updateProfileLoading;
+  final bool updatePasswordLoading;
 
   final GetStartedModel? getStartedModel;
   final ProfileModel? profileModel;
@@ -27,24 +27,24 @@ class AuthState extends Equatable {
   }
 
   const AuthState({
-    this.getStartedRequesting,
-    this.verifyCodeLoading,
-    this.resetPasswordLoading,
+    required this.getStartedRequesting,
+    required this.verifyCodeLoading,
+    required this.resetPasswordLoading,
     this.getStartedModel,
     this.profileModel,
-    this.loginLoading,
-    this.signUpLoading,
-    this.updateProfileLoading,
-    this.updatePasswordLoading,
+    required this.loginLoading,
+    required this.signUpLoading,
+    required this.updateProfileLoading,
+    required this.updatePasswordLoading,
   });
 
   AuthState copyWith({
     bool? getStartedRequesting,
-    verifyCodeLoading,
-    resetPasswordLoading,
-    loginLoading,
-    signUpLoading,
-    updatePasswordLoading,
+    bool? verifyCodeLoading,
+    bool? resetPasswordLoading,
+    bool? loginLoading,
+    bool? signUpLoading,
+    bool? updatePasswordLoading,
     GetStartedModel? getStartedModel,
     ProfileModel? profileModel,
     bool? updateProfileLoading,
@@ -65,14 +65,14 @@ class AuthState extends Equatable {
 
   @override
   List<Object?> get props => [
-        updateProfileLoading,
-        getStartedRequesting,
-        getStartedModel,
-        resetPasswordLoading,
-        verifyCodeLoading,
-        profileModel,
-        loginLoading,
-        signUpLoading,
-        updatePasswordLoading,
-      ];
+    updateProfileLoading,
+    getStartedRequesting,
+    getStartedModel,
+    resetPasswordLoading,
+    verifyCodeLoading,
+    profileModel,
+    loginLoading,
+    signUpLoading,
+    updatePasswordLoading,
+  ];
 }
