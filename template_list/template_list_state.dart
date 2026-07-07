@@ -1,20 +1,20 @@
 part of 'template_list_bloc.dart';
 
 class TemplateListState extends Equatable {
-  final ListModel<TemplateListModel> templateListList;
+  final ListModel<TemplateListModel> TemplateListList;
 
-  const TemplateListState({required this.templateListList});
+  const TemplateListState({required this.TemplateListList});
 
   factory TemplateListState.empty() {
-    return const TemplateListState(templateListList: ListModel());
+    return const TemplateListState(TemplateListList: ListModel());
   }
 
-  TemplateListState copyWith({ListModel<TemplateListModel>? templateListList}) {
+  TemplateListState copyWith({ListModel<TemplateListModel>? TemplateListList}) {
     return TemplateListState(
-      templateListList: templateList ?? this.templateListList,
+      TemplateListList: TemplateListList ?? this.TemplateListList,
     );
   }
 
   @override
-  List<Object?> get props => [templateListList];
+  List<Object?> get props => [TemplateListList];
 }

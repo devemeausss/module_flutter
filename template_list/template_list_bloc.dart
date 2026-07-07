@@ -20,19 +20,19 @@ class TemplateListBloc extends Bloc<TemplateListEvent, TemplateListState> {
     Emitter<TemplateListState> emit,
   ) async {
     if (event.isLoadingMore &&
-        (state.templateListList.next == null ||
-            state.templateListList.isLoadingMore)) {
+        (state.TemplateListList.next == null ||
+            state.TemplateListList.isLoadingMore)) {
       return;
     }
 
-    if (event.isFreshing && state.templateListList.isRefreshing) {
+    if (event.isFreshing && state.TemplateListList.isRefreshing) {
       return;
     }
 
     try {
       emit(
         state.copyWith(
-          templateListList: state.templateListList.copyWith(
+          TemplateListList: state.TemplateListList.copyWith(
             isLoadingMore: event.isLoadingMore,
             isLoading: !event.isLoadingMore && !event.isFreshing,
             isRefreshing: !event.isLoadingMore && event.isFreshing,
@@ -43,14 +43,14 @@ class TemplateListBloc extends Bloc<TemplateListEvent, TemplateListState> {
       ListModel<TemplateListModel> newTemplateListList =
           await templateListRepositories.getTemplateList(
             url: event.isLoadingMore
-                ? state.templateListList.next!
-                : APIUrl.templateListList,
+                ? state.TemplateListList.next!
+                : APIUrl.TemplateListList,
           );
       emit(
         state.copyWith(
-          templateListList: newTemplateListList.copyWith(
+          TemplateListList: newTemplateListList.copyWith(
             results: event.isLoadingMore
-                ? state.templateListList.results! + newTemplateListList.results!
+                ? state.TemplateListList.results! + newTemplateListList.results!
                 : newTemplateListList.results,
           ),
         ),
@@ -61,7 +61,7 @@ class TemplateListBloc extends Bloc<TemplateListEvent, TemplateListState> {
     } catch (e) {
       emit(
         state.copyWith(
-          templateListList: state.templateListList.copyWith(
+          TemplateListList: state.TemplateListList.copyWith(
             errorMessage: event.isLoadingMore ? null : e.parseError.message,
             isRefreshing: false,
             isLoading: false,
