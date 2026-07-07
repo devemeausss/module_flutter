@@ -16,47 +16,59 @@ class TemplateListBloc extends Bloc<TemplateListEvent, TemplateListState> {
 
   // Handle load data
   void _getTemplateList(
-      GetTemplateList event, Emitter<TemplateListState> emit) async {
+    GetTemplateList event,
+    Emitter<TemplateListState> emit,
+  ) async {
     if (event.isLoadingMore &&
-        (state.listTemplateList.next == null ||
-            state.listTemplateList.isLoadingMore)) {
+        (state.templateListList.next == null ||
+            state.templateListList.isLoadingMore)) {
       return;
     }
 
-    if (event.isFreshing && state.listTemplateList.isRefreshing) {
+    if (event.isFreshing && state.templateListList.isRefreshing) {
       return;
     }
 
     try {
-      emit(state.copyWith(
-          listTemplateList: state.listTemplateList.copyWith(
-        isLoadingMore: event.isLoadingMore,
-        isLoading: !event.isLoadingMore && !event.isFreshing,
-        isRefreshing: !event.isLoadingMore && event.isFreshing,
-        errorMessage: '',
-      )));
+      emit(
+        state.copyWith(
+          templateListList: state.templateListList.copyWith(
+            isLoadingMore: event.isLoadingMore,
+            isLoading: !event.isLoadingMore && !event.isFreshing,
+            isRefreshing: !event.isLoadingMore && event.isFreshing,
+            errorMessage: '',
+          ),
+        ),
+      );
       ListModel<TemplateListModel> newTemplateListList =
           await templateListRepositories.getTemplateList(
-              url: event.isLoadingMore
-                  ? state.listTemplateList.next!
-                  : APIUrl.listTemplateList);
-      emit(state.copyWith(
-          listTemplateList: newTemplateListList.copyWith(
-              results: event.isLoadingMore
-                  ? state.listTemplateList.results! +
-                      newTemplateListList.results!
-                  : newTemplateListList.results)));
+            url: event.isLoadingMore
+                ? state.templateListList.next!
+                : APIUrl.templateListList,
+          );
+      emit(
+        state.copyWith(
+          templateListList: newTemplateListList.copyWith(
+            results: event.isLoadingMore
+                ? state.templateListList.results! + newTemplateListList.results!
+                : newTemplateListList.results,
+          ),
+        ),
+      );
       if (!event.isLoadingMore) {
         add(const GetTemplateList(isLoadingMore: true));
       }
     } catch (e) {
-      emit(state.copyWith(
-          listTemplateList: state.listTemplateList.copyWith(
-        errorMessage: event.isLoadingMore ? null : e.parseError.message,
-        isRefreshing: false,
-        isLoading: false,
-        isLoadingMore: false,
-      )));
+      emit(
+        state.copyWith(
+          templateListList: state.templateListList.copyWith(
+            errorMessage: event.isLoadingMore ? null : e.parseError.message,
+            isRefreshing: false,
+            isLoading: false,
+            isLoadingMore: false,
+          ),
+        ),
+      );
 
       if (event.isLoadingMore) {
         Helper.showToastBottom(message: e.parseError.message);
