@@ -26,14 +26,13 @@ function generateFileName() {
 }
 
 
-for path in "assets/images"/*; do
+for path in assets/images/*/; do
   if [[ -d $path ]]; then
-    filename=$(basename "$path")
-    for files in "${path}"/*; do
-      generateFileName "$files"
+    for files in "${path}"*; do
+      if [[ -f $files ]]; then
+        generateFileName "$files"
+      fi
     done
-  else 
-    generateFileName "$path"
   fi
 done
 

@@ -90,6 +90,11 @@ lowercase_new_string=$(echo "$new_folder_name" | tr '[:upper:]' '[:lower:]')
 old_converted_file_name=$(echo "$old_folder_name" | awk -F_ '{for (i=1; i<=NF; i++) $i=toupper(substr($i,1,1)) substr($i,2)}1' OFS=)
 new_converted_file_name=$(echo "$new_folder_name" | awk -F_ '{for (i=1; i<=NF; i++) $i=toupper(substr($i,1,1)) substr($i,2)}1' OFS=)
 
+oldLowerCaseFirstLetter="$(tr '[:upper:]' '[:lower:]' <<< ${old_converted_file_name:0:1})${old_converted_file_name:1}"
+newLowerCaseFirstLetter="$(tr '[:upper:]' '[:lower:]' <<< ${new_converted_file_name:0:1})${new_converted_file_name:1}"
+oldListFieldName="${oldLowerCaseFirstLetter}List"
+newListFieldName="${newLowerCaseFirstLetter}List"
+
 cd $path_blocs
 # Rename the folder
 mv "$old_folder_name" "$new_folder_name"
@@ -105,15 +110,18 @@ for file in "$new_folder_name"/*; do
   new_file="${new_folder_name}/${new_folder_name}_${extension}"
   mv "${old_file_name}_${extension}" $new_file
   
-  # Capitalize from second letter. Eg: Repositories
-  oldLowerCaseFirstLetter="$(tr '[:upper:]' '[:lower:]' <<< ${old_converted_file_name:0:1})${old_converted_file_name:1}"
-  newLowerCaseFirstLetter="$(tr '[:upper:]' '[:lower:]' <<< ${new_converted_file_name:0:1})${new_converted_file_name:1}"
-  oldLowerCaseFirstLetter=${oldLowerCaseFirstLetter}Repositories
-  newLowerCaseFirstLetter=${newLowerCaseFirstLetter}Repositories
-  sed -i '' "s/${oldLowerCaseFirstLetter}/${newLowerCaseFirstLetter}/g" "$new_file"
+  # Eg: templateListRepositories -> privacyRepositories
+  sed -i '' "s/${oldLowerCaseFirstLetter}Repositories/${newLowerCaseFirstLetter}Repositories/g" "$new_file"
+
+  # Eg: templateListList -> privacyList
+  sed -i '' "s/${oldListFieldName}/${newListFieldName}/g" "$new_file"
 
   sed -i '' "s/${lowercase_old_string}/${lowercase_new_string}/g" "$new_file"
   sed -i '' "s/${old_converted_file_name}/${new_converted_file_name}/g" "$new_file"
+
+  # Eg: PrivacyList -> privacyList (skip newPrivacyList local variable)
+  sed -i '' "s/\\([^a-z]\\)${new_converted_file_name}List/\\1${newListFieldName}/g" "$new_file"
+  sed -i '' "s/^${new_converted_file_name}List/${newListFieldName}/g" "$new_file"
 done
 
 # Create model
@@ -145,13 +153,12 @@ cd $path_screens
 mkdir $new_folder_name
 cd $new_folder_name
 touch ${new_folder_name}_page.dart
-newLowerCaseFirstLetterBloc="$(tr '[:upper:]' '[:lower:]' <<< ${new_converted_file_name:0:1})${new_converted_file_name:1}"
 content="BlocBuilder<${new_converted_file_name}Bloc, ${new_converted_file_name}State>(
         builder: (context, state) {
-          List<${new_converted_file_name}Model> list${new_converted_file_name} =
-              state.list${new_converted_file_name}.results ?? [];
+          List<${new_converted_file_name}Model> ${newListFieldName} =
+              state.${newListFieldName}.results ?? [];
           return AppListViewCustom(
-            bloc: _${newLowerCaseFirstLetterBloc}Bloc,
+            bloc: _${newLowerCaseFirstLetter}Bloc,
             $(if [ $selected_options = 2 ]; then echo "scrollDirection: Axis.horizontal,
             heightItemHorizontalLoading: 72,
             widthItemHorizontalLoading: 72,
@@ -167,10 +174,10 @@ content="BlocBuilder<${new_converted_file_name}Bloc, ${new_converted_file_name}S
             onLoadMore: () {
               _getData(isLoadingMore: true);
             },
-            data: state.list${new_converted_file_name},
+            data: state.${newListFieldName},
             renderItem: (int index) {
               return Item${new_converted_file_name}(
-                item: list${new_converted_file_name}[index],
+                item: ${newListFieldName}[index],
               );
             },
           );
@@ -195,15 +202,15 @@ class ${new_converted_file_name}Page extends StatefulWidget {
 }
 
 class _${new_converted_file_name}PageState extends State<${new_converted_file_name}Page> {
-  late ${new_converted_file_name}Bloc _${newLowerCaseFirstLetterBloc}Bloc;
+  late ${new_converted_file_name}Bloc _${newLowerCaseFirstLetter}Bloc;
   _getData({bool isFreshing = false, bool isLoadingMore = false}) {
-    _${newLowerCaseFirstLetterBloc}Bloc.add(Get${new_converted_file_name}(
+    _${newLowerCaseFirstLetter}Bloc.add(Get${new_converted_file_name}(
         isFreshing: isFreshing, isLoadingMore: isLoadingMore));
   }
 
   @override
   void initState() {
-    _${newLowerCaseFirstLetterBloc}Bloc = context.read<${new_converted_file_name}Bloc>();
+    _${newLowerCaseFirstLetter}Bloc = context.read<${new_converted_file_name}Bloc>();
     _getData();
     super.initState();
   }
@@ -287,6 +294,6 @@ cd ..
 sed -i "" -e "$ d" lib/api/apiUrl.dart
 echo "  
   // ${new_converted_file_name}
-  static String list${new_converted_file_name} = '\${baseUrl}${api}';" >> lib/api/apiUrl.dart 
+  static String ${newListFieldName} = '\${baseUrl}${api}';" >> lib/api/apiUrl.dart 
 echo "" >> lib/api/apiUrl.dart
 echo "}" >> lib/api/apiUrl.dart
